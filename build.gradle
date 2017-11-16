@@ -1,0 +1,140 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
+    }
+}
+
+group 'com.github.redhatqe.polarize'
+version '0.1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+String projectURL = 'https://github.com/RedHatQE/polarize'
+String devURL = 'git@github.com:RedHatQE/polarize.git'
+String propFile = System.getProperty("user.home") + "/.polarize/polarize-project.properties"
+
+class Creds {
+    public String user
+    public String pw
+
+    Creds(String u, String p) {
+        this.user = u
+        this.pw = p
+    }
+}
+
+def getCreds(String polarizePropertyFile) {
+    File f = new File(polarizePropertyFile)
+    Properties props = new Properties()
+    props.load(f.newDataInputStream())
+    return new Creds(props.getProperty("ossrhUsername"), props.getProperty("ossrhPassword"))
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3'
+}
+
+
+// Had to add the -quiet option when creating the javadocs for Java 8, or creation will fail
+// Generates javadocs
+task myJavadocs(type: Javadoc) {
+    source = sourceSets.main.allJava
+    options.addStringOption('Xdoclint:none', '-quiet')
+    classpath += sourceSets.test.compileClasspath
+}
+
+// Generates the javadoc jar
+task javadocJar (type: Jar, dependsOn: myJavadocs) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Generates the polarize jar
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
+artifacts {
+    archives jar, sourceJar, javadocJar, shadowJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            Creds creds = getCreds(propFile)
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: creds.user, password: creds.pw)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: creds.user, password: creds.pw)
+            }
+
+            pom.project {
+                name project.name
+                packaging 'jar'
+                description 'Library to help with configuration'
+                url projectURL
+
+                scm {
+                    connection "scm:git:${projectURL}.git"
+                    developerConnection "scm:git:${devURL}"
+                    url projectURL
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'stoner'
+                        name 'Sean Toner'
+                        email 'stoner@redhat.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+task classPath {
+    doLast {
+        println sourceSets.main.runtimeClasspath.asPath
+    }
+}
+
+
+task getPomFiles {
+    doLast {
+        println findPomFiles(arcDir)
+    }
+}
