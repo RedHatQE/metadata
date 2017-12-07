@@ -8,7 +8,7 @@ buildscript {
 }
 
 group 'com.github.redhatqe.polarize'
-version '0.1.0-SNAPSHOT'
+version '0.1.0'
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -18,8 +18,8 @@ apply plugin: 'signing'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-String projectURL = 'https://github.com/RedHatQE/polarize'
-String devURL = 'git@github.com:RedHatQE/polarize.git'
+String projectURL = 'https://github.com/RedHatQE/metadata'
+String devURL = 'git@github.com:RedHatQE/metadata.git'
 String propFile = System.getProperty("user.home") + "/.polarize/polarize-project.properties"
 
 class Creds {
