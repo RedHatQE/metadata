@@ -62,4 +62,5 @@ public @interface TestDefinition {
     String xmlDesc() default "";             // This is the path to the XML description file (the xml of the TestCase)
     // eg ${PROJECT_DIR}/testcases/{PROJECT}/{PACKAGE.CLASS.METHOD_NAME/xmlDesc
     boolean update() default false;          // If true, when xml description file exists, update with new one
+    boolean importReady() default false;  // set to true (default) when this TestDefinition is reviewed and ready to be imported as a testcase into Polarion to retrieve a testCaseID
 }

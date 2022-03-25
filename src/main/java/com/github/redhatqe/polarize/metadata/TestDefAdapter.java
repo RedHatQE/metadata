@@ -35,7 +35,8 @@ public class TestDefAdapter {
     // These are not directly used by the importer
     public String xmlDesc = "";
     public boolean update = false;
-
+    public boolean importReady = false;
+    
     static public class ParamAdapter {
         public String name;
         public String scope = "local";
@@ -111,6 +112,7 @@ public class TestDefAdapter {
         adap.testCaseID = def.testCaseID();
         adap.testtype = TestTypeAdapter.convert(def.testtype());
         adap.update = def.update();
+	adap.importReady = def.importReady();
         adap.upstream = def.upstream();
         adap.xmlDesc = def.xmlDesc();
         return adap;
