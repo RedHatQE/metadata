@@ -37,9 +37,9 @@ public enum DefTypes {
         AUTOMATED, NOTAUTOMATED, MANUALONLY
     }
 
-    public enum SubsystemTeam implements ToString {
-      SST_SUBSCRIPTION_MANAGER
-    }
+    // public enum SubsystemTeam implements ToString {
+    //   SST_SUBSCRIPTION_MANAGER
+    // }
 
     public enum Subtypes {
         EMPTY,
